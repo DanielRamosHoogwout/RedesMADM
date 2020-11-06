@@ -1,0 +1,16 @@
+"0","shrt_pth <- shortest_paths(gf,
+                           from = V(gf)[name==""1000""],
+                           to  = V(gf)[name==""2000""])$vpath
+shrt_pth
+"
+"1","[[1]]
+"
+"1","+ 5/4039 vertices, named, from 9f59c94:
+"
+"1",""
+"1","[1] 1000 107  58   1912 2000"
+"1","
+"
+"1",""
+"1","
+"

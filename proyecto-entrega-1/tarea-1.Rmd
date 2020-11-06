@@ -1,5 +1,6 @@
 ---
-title: "Entrega 1"
+title: "Tarea 1"
+subtitle: "Redes Sociales y Económicas"
 author: "Jordi Vanrell, Daniel Ramos & Sergi Fornés"
 output:
   pdf_document: default
@@ -18,9 +19,11 @@ library(igraph)
 Leemos el archivo con los datos y lo metemos en un dataframe.
 
 ```{r}
-data <- read.table("facebook_sample_anon.txt")
+data <- read.table("./data/facebook_sample_anon.txt")
 head(data)
 ```
+
+Observamos que en el data frame tenemos las aristas del grafo. 
 
 Creamos el grafo.
 
@@ -28,6 +31,7 @@ Creamos el grafo.
 gf <- graph_from_data_frame(d=data, directed = F)
 ```
 
+***
 
 *a)* Is it connected? If it is not, replace it by its largest connected component.
 
@@ -39,6 +43,8 @@ is.connected(gf)
 
 Observamos que es cierto.
 
+***
+
 *b)* Compute the edge density.
 
 ```{r}
@@ -47,13 +53,17 @@ edge_density(gf, loops=F)
 
 La densidad del grafo es de `r round(edge_density(gf, loops=F), 3)`. Esto significa que el `r round(edge_density(gf, loops=F)*100, 1)`% de las aristas posibles están definidas.
 
+***
+
 *c)* What is the mean distance among the subjects?
 
 ```{r}
 mean_distance(gf, directed = F)
 ```
 
-La media de la distancia más corta entre todos los pares de nodos posibles es `r round(mean_distance(gf, directed = F), 3)`.
+La media de la distancia más corta entre todos los pares de nodos es `r round(mean_distance(gf, directed = F), 3)`.
+
+***
 
 *d)* Calculate the list of vertices in a diameter of the graph. Plot only this path with the size of the node proportional to the degree of the node.
 
@@ -64,7 +74,9 @@ dmt <- get_diameter(gf, directed = F)
 dmt
 ```
 
-Lo dibujamos. FALTA ACABAR!FALTA ACABAR!FALTA ACABAR!
+Los nodos del diámetro del grafo son: `r attr(dmt, "names")`
+
+Dibujamos estos nodos con tamaño igual al grado del nodo. FALTA ACABAR!FALTA ACABAR!FALTA ACABAR!
 
 ```{r, eval = F, echo=F}
 plot(as.grapf(dmt))
@@ -78,35 +90,73 @@ ecol <- rep("gray80", ecount(gf))
 ecol[E(gf, path=dmt)] <- "orange" 
 # E(net, path=diam) finds edges along a path, here 'diam'
 plot(gf, vertex.color=vcol, edge.color=ecol, edge.arrow.mode=0, vertex.)
-
-
-
-
-
-
 graph( edges=as.vector(dmt), n=3, directed=F )
+
+diameter(gf, directed=F, weights=NA)
+dmt <- get_diameter(gf, directed=F)
+dmt # nombre nodos
+
+
+
+
+
+diam <- as.vector(dmt) # posiciones nodos
+diam
+# calculamos el grado de los nodos
+degrees <- degree(gf, mode="all")
+
+
+deg <- rep(1,vcount(gf))
+deg[diam] <- degrees[diam]
+
+vcol <- rep("white", vcount(gf))
+vcol[diam] <- "cyan1"
+ecol <- rep(NULL, ecount(gf))
+ecol[E(gf, path=dmt)] <- "black"
+vlab <- rep(NULL,vcount(gf))
+vlab[diam] <- diam
+vframe <- rep("grey",vcount(gf))
+vframe[diam] <- "black"
+
+#tkid <- tkplot(gf) #tkid is the id of the tkplot
+
+plot(gf,vertex.size=2*sqrt(deg), 
+     vertex.color=adjustcolor(vcol,alpha.f=.2), edge.color=ecol, 
+     edge.width=1.5, vertex.label=vlab,
+     vertex.label.color = adjustcolor("black", .5), vertex.frame.color=vframe)
 ```
 
+***
 
 *e)* Calculate the shortest path from the vertex named "1000" to the vertex named "2000" in the original file.
 
 ```{r}
-shortest_paths(gf,
-               from = V(gf)[name=="1000"],
-               to  = V(gf)[name=="2000"])$vpath
+shrt_pth <- shortest_paths(gf,
+                           from = V(gf)[name=="1000"],
+                           to  = V(gf)[name=="2000"])$vpath
+shrt_pth
 ```
 
-*f)* Calculate a clique of 5 friends, if there is one. FALTA ACABAR!FALTA ACABAR!FALTA ACABAR!FALTA ACABAR!
+El recorrido más corto es: `r attr(shrt_pth[[1]], "names")`
+
+***
+
+*f)* Calculate a clique of 5 friends, if there is one.
 
 ```{r}
-#sapply(cliques(gf), length)
+# Encontramos el primer clique de 5 amigos
+#clq <- cliques(gf, min =5, max = 5)[[1]]
+#clq
 ```
 
+Un grupo de 5 personas cualquiera que se conocen todas entre ellas podría ser: r attr(clq, "names")
+
+***
 
 *h)* Calculate the list of names of verteces that are the neigbours of verteces of degree one and that are not of degree one.
 
 ```{r}
-# Ponemos el atributo degree a cada nodo
+# Creamos el atributo degree para cada nodo
 V(gf)$degree = degree(gf)
 
 # Obtenemos los nodos con 1 vecino
@@ -114,4 +164,16 @@ alone <- V(gf)[V(gf)$degree == 1]
 
 # Obtenemos la lista de nodos vecinos de los nodos de grado 1
 vecinos <- adjacent_vertices(gf, alone)
+
+# Convertimos la lista en un vector con las posiciones de los vecinos
+pos_v <- unlist(vecinos, use.names=FALSE)
+
+# Usamos la posición para encontrar los vecinos
+list_v <- V(gf)[pos_v]
+
+# Quitamos nodos repetidos de la lista
+list_v_u <- unique(list_v)
+list_v_u
 ```
+
+La lista de los nodos con vecinos de grado uno es: `r attr(list_v_u, "names")`
