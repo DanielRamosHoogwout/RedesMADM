@@ -76,54 +76,26 @@ dmt
 
 Los nodos del diámetro del grafo son: `r attr(dmt, "names")`
 
-Dibujamos estos nodos con tamaño igual al grado del nodo. FALTA ACABAR!FALTA ACABAR!FALTA ACABAR!
+Dibujamos estos nodos con tamaño igual al grado del nodo en el grafo original.
 
-```{r, eval = F, echo=F}
-plot(as.grapf(dmt))
-g1 <- graph( edges=c(687,  686,  698,  3437, 567,  414,  594,  3980, 3981), n=3, directed=F )
-ecol[E(gf, path=dmt)]
-ecol <- rep("gray80", ecount(gf))
-plot(gf, vertex.color="grey", edge.color=ecol, edge.arrow.mode=0)
-vcol <- rep("gray40", vcount(gf))
-vcol[dmt] <- "gold"
-ecol <- rep("gray80", ecount(gf))
-ecol[E(gf, path=dmt)] <- "orange" 
-# E(net, path=diam) finds edges along a path, here 'diam'
-plot(gf, vertex.color=vcol, edge.color=ecol, edge.arrow.mode=0, vertex.)
-graph( edges=as.vector(dmt), n=3, directed=F )
+```{r}
+# Creamos el atributo degree para cada nodo
+V(gf)$degree = degree(gf)
 
-diameter(gf, directed=F, weights=NA)
-dmt <- get_diameter(gf, directed=F)
-dmt # nombre nodos
+# Creamos un subgrafo con el diámetro del grafo original
+gf_dmt <- induced_subgraph(gf, dmt)
 
+# Cambiamos el atributo del tamaño de cada nodo en función de su grado en el grafo original
+V(gf_dmt)$size = 2*sqrt(V(gf_dmt)$degree)
 
-
-
-
-diam <- as.vector(dmt) # posiciones nodos
-diam
-# calculamos el grado de los nodos
-degrees <- degree(gf, mode="all")
-
-
-deg <- rep(1,vcount(gf))
-deg[diam] <- degrees[diam]
-
-vcol <- rep("white", vcount(gf))
-vcol[diam] <- "cyan1"
-ecol <- rep(NULL, ecount(gf))
-ecol[E(gf, path=dmt)] <- "black"
-vlab <- rep(NULL,vcount(gf))
-vlab[diam] <- diam
-vframe <- rep("grey",vcount(gf))
-vframe[diam] <- "black"
-
-#tkid <- tkplot(gf) #tkid is the id of the tkplot
-
-plot(gf,vertex.size=2*sqrt(deg), 
-     vertex.color=adjustcolor(vcol,alpha.f=.2), edge.color=ecol, 
-     edge.width=1.5, vertex.label=vlab,
-     vertex.label.color = adjustcolor("black", .5), vertex.frame.color=vframe)
+# Lo imprimimos
+plot(gf_dmt,
+     vertex.color = "grey80",
+     edge.color = "black",
+     edge.width = 1,
+     vertex.label.color = "black",
+     vertex.label.font = 2,
+     main = "Diámetro del grafo")
 ```
 
 ***
@@ -143,23 +115,32 @@ El recorrido más corto es: `r attr(shrt_pth[[1]], "names")`
 
 *f)* Calculate a clique of 5 friends, if there is one.
 
+Si el grafo fuera más pequeño, podríamos usar el siguiente código:
+
 ```{r}
-# Encontramos el primer clique de 5 amigos
-#clq <- cliques(gf, min =5, max = 5)[[1]]
-#clq
+#cq <- cliques(gf, min =5, max = 5)[[1]]
+#cq
 ```
 
-Un grupo de 5 personas cualquiera que se conocen todas entre ellas podría ser: r attr(clq, "names")
+Al no poder ejecutar el código anterior debido a la gran cantidad de memoria necesaria, obtendremos un subgrafo cualquiera con 500 nodos y así buscaremos algún clique de 5 amigos dentro de ese subgrafo, por lo que también pertenecerá al grafo original.
+
+```{r}
+# Obtenemos el subgrafo
+gf_cq <- induced_subgraph(gf, 1:500)
+
+# Buscamos el primer clique de 5 nodos que se encuentre
+cq <- cliques(gf_cq, min = 5, max = 5)[[1]]
+cq
+```
+
+Un clique de 5 nodos cualquiera es: `r attr(cq, "names")`
 
 ***
 
 *h)* Calculate the list of names of verteces that are the neigbours of verteces of degree one and that are not of degree one.
 
 ```{r}
-# Creamos el atributo degree para cada nodo
-V(gf)$degree = degree(gf)
-
-# Obtenemos los nodos con 1 vecino
+# Obtenemos los nodos con 1 vecino (los de grado 1)
 alone <- V(gf)[V(gf)$degree == 1]
 
 # Obtenemos la lista de nodos vecinos de los nodos de grado 1
