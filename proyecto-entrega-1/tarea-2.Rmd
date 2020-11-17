@@ -1,0 +1,76 @@
+---
+title: "Tarea 2"
+author: "Daniel Ramos, Jordi Vanrell, Sergi Fornes"
+date: "17/11/2020"
+output: pdf_document
+---
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(fig.align="center", echo=TRUE, warning=FALSE, message=FALSE,autodep = TRUE,cache=FALSE)
+library(knitr)
+library(printr)
+library(igraph)
+```
+
+We shall consider again the undirected Facebook friendship network considered in the last handout. The links in this network are contained in the file **facebook_sample_anon.txt**. Download it on your computer and upload it to R as a dataframe. Define an undirected graph with this list of edges.
+
+
+**1)**  It has been observed in many networks an association between "centrality" and "lethality," defined as the fatal disconnection of the network when nodes are removed. Let's study this association on this network.
+
+```{r}
+data <- read.table("./data/facebook_sample_anon.txt")
+head(data)
+gf <- graph_from_data_frame(d=data, directed = F)
+```
+
+
+*a)* Repeat 1000 times the procedure of removing a random 0.1% of its set of nodes, and compute the average number of connected components of the resulting networks and the average fraction of the network represented by the largest component. Use **set.seed** to make your results reproducible.
+
+```{r}
+set.seed(2020)
+longitud <- length(V(gf))#Numero de Nodos iniciales
+new.gf <- gf #Copiamos gf
+vector.connectedness <- double(1000)
+vector.fraction.network <- double(1000)
+for(x in 1:1000){
+  #Escogemos nodos aleatorios
+  nodos = sample(V(new.gf),round(0.001*longitud), replace = FALSE)
+  length(V(new.gf))
+  #Eliminamos los nodos escogidos anteriormente
+  new.gf<- igraph::delete.vertices(new.gf, nodos)
+  length(V(new.gf))
+  vector.connectedness[x] <- components(new.gf)$no
+  vector.fraction.network[x] <- max(components(new.gf)$csize)/sum(components(new.gf)$csize)
+  
+}
+mean(vector.connectedness)
+mean(vector.fraction.network)
+```
+
+*b)* Now, compute the number of connected components and the fraction represented by the largest component of the networks obtained after removing the most central 0.1% of nodes, for the following centrality indices (of course, if the most central 0.1% of nodes for two indices are the same set of nodes, you need not waste your time considering twice the same network): *degree*; *closeness*; *betweenness*; *page.rank*. (**Hint**: It might be convenient to define first a function that removes a given set of nodes of this graph and computes the number of connected components and the fraction represented by the largest component of the resulting network; then you will only need to apply it to the required different sets of most central nodes.) Is it what you expected? 
+
+```{r}
+new.gf2 <- gf
+
+V(new.gf2)$degree <- degree(new.gf2)
+V(new.gf2)$closeness <- closeness(new.gf2)
+V(new.gf2)$betweenness <- betweenness(new.gf2)
+
+grados = sort(V(new.gf2)$degree, decreasing = TRUE)[1:4]
+V(new.gf2)[V(new.gf2)$degree == grados]
+sort(V(new.gf2)$closeness, decreasing = TRUE)
+sort(V(new.gf2)$betweenness, decreasing = TRUE)
+
+test = make_graph(c(1,2,2,3,3,4,4,5,6,7,7,8,8,9))
+V(test)$degree <- degree(test)
+z = sort(V(test)$degree)[1:4]
+names(z)
+V(test)[V(test)$degree == z]
+
+```
+
+**2)** Now, consider the same graph as a directed one, and find the hubs and authorities scores. Compare with the page rank score. 
+
+
+
+
