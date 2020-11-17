@@ -66,6 +66,7 @@ V(test)$degree <- degree(test)
 z = sort(V(test)$degree)[1:4]
 names(z)
 V(test)[V(test)$degree == z]
+
 ```
 
 **2)** Now, consider the same graph as a directed one, and find the hubs and authorities scores. Compare with the page rank score. 
