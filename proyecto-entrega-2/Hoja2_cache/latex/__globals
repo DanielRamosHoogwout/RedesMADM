@@ -1,0 +1,7 @@
+unnamed-chunk-1	F	graph_from_data_frame	read.table
+unnamed-chunk-2	$	[<-	c	components	delete_vertices	for	gf	length	max	mean	round	sample	set.seed	sum	V
+unnamed-chunk-3	$	$<-	components	degree	delete_vertices	max	sort	sum	V	V<-
+unnamed-chunk-4	$	$<-	closeness	components	delete_vertices	max	sort	sum	V	V<-
+unnamed-chunk-5	$	$<-	betweenness	components	delete_vertices	max	sort	sum	V	V<-
+unnamed-chunk-6	$	$<-	components	delete_vertices	F	max	page_rank	sort	sum	V	V<-
+unnamed-chunk-7	$	$<-	authority_score	data	graph_from_data_frame	hub_score	library	page_rank	sort	T	V	V<-
