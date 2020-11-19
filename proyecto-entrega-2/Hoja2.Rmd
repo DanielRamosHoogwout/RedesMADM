@@ -1,8 +1,7 @@
 ---
 title: "Tarea 2"
 subtitle: "Redes Sociales y Económicas"
-author: "Daniel Ramos, Jordi Vanrell, Sergi Fornes"
-date: "17/11/2020"
+author: "Daniel Ramos, Jordi Vanrell & Sergi Fornés"
 output: pdf_document
 ---
 
@@ -124,6 +123,8 @@ Como es de esperar, quitar 4 nodos centrales tiene mucho mayor efecto en la cone
 
 **2)** Now, consider the same graph as a directed one, and find the hubs and authorities scores. Compare with the page rank score.
 
+Cargaremos de nuevo el grafo, pero esta vez será dirigido. Después comparamos de diversas formas la puntuación de page rank con las de HITS, primero buscando coincidencias en los nodos con mayores puntuaciones en cada caso, y después observando las correlaciones.
+
 ```{r}
 gf_d <- graph_from_data_frame(d = data, directed = T)
 # Calculamos los valores pagerank, hub y authority de los nodos del grafo dirigido
@@ -131,46 +132,23 @@ V(gf_d)$pageRank <- page_rank(gf_d, directed = T)$vector
 V(gf_d)$hs <- hub_score(gf_d, weights = NA)$vector
 V(gf_d)$as <- authority_score(gf_d, weights = NA)$vector
 
-# Buscamos los 10 nodos con mayor pagerank
-dmax_pr <- sort(V(gf_d)$pageRank, decreasing = TRUE)[1:10]
+# Buscamos los 50 nodos con mayor pagerank
+dmax_pr <- sort(V(gf_d)$pageRank, decreasing = TRUE)[1:50]
 dcentral_v_pr <- V(gf_d)[V(gf_d)$pageRank %in% dmax_pr]
-
-# Buscamos el hub y el authority de estos 10 nodos
-V(gf_d)$hs[V(gf_d) %in% dcentral_v_pr]
-V(gf_d)$as[V(gf_d) %in% dcentral_v_pr]
-
-
-
-
-
-
-# Buscamos los 10 nodos con mayor pagerank
-dmax_pr <- sort(V(gf_d)$pageRank, decreasing = TRUE)[1:10]
-dcentral_v_pr <- V(gf_d)[V(gf_d)$pageRank %in% dmax_pr]
-# Buscamos los 10 nodos con mayor hub
-dmax_hs <- sort(V(gf_d)$hs, decreasing = TRUE)[1:10]
+# Buscamos los 50 nodos con mayor hub
+dmax_hs <- sort(V(gf_d)$hs, decreasing = TRUE)[1:50]
 dcentral_v_hs <- V(gf_d)[V(gf_d)$hs %in% dmax_hs]
-# Buscamos los 10 nodos con mayor authority
-dmax_as <- sort(V(gf_d)$as, decreasing = TRUE)[1:10]
+# Buscamos los 50 nodos con mayor authority
+dmax_as <- sort(V(gf_d)$as, decreasing = TRUE)[1:50]
 dcentral_v_as <- V(gf_d)[V(gf_d)$as %in% dmax_as]
+# Con hub no hay coincidencias
+dcentral_v_pr[dcentral_v_pr %in% dcentral_v_hs]
+# Con authority hay 5 coincidencias
+dcentral_v_pr[dcentral_v_pr %in% dcentral_v_as]
 
-#cor(pageRank, hs)
-#cor(pageRank, as)
-#plot(pageRank, hs)
-#plot(pageRank, as)
-
-
-#plot(gf_d, vertex.size=hs*50, main="Hubs")
-#plot(gf_d, vertex.size=as*30, main="Authorities")
-
-library(networkR)
-# data <- read.table("facebook_sample_anon.txt")
-# head(data)
-# gf_d <- graph_from_data_frame(d=data, directed = T)
-#kmax<-20 # 20 iteraciones
-#gf_d_mtx <- as_adjacency_matrix(gf_d)
-#op<-hits(gf_d_mtx,kmax)
-#op
-#str(op$authorities)
-#str(op$hubs)
+# También miramos las correlaciones
+cor(V(gf_d)$pageRank, V(gf_d)$hs)
+cor(V(gf_d)$pageRank, V(gf_d)$as)
 ```
+
+Tiene sentido que authority y page rank estén más correlacionados porque ambas puntuaciones tienen en cuenta las aristas de entrada. Por otro lado, la puntuación hub solo tiene en cuenta las salidas, por lo que la correlación es menor.
