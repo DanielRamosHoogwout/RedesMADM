@@ -1,7 +1,0 @@
-unnamed-chunk-1	data	gf
-unnamed-chunk-2	i	mean_con	mean_frac	n_gf	s	vec_con	vec_frac	.Random.seed
-unnamed-chunk-3	central_v_degree	degree_con	degree_frac	gf	max_degree	n_gf
-unnamed-chunk-4	central_v_closeness	closeness_con	closeness_frac	gf	max_closeness	n_gf
-unnamed-chunk-5	betweenness_con	betweenness_frac	central_v_betweenness	gf	max_betweenness	n_gf
-unnamed-chunk-6	central_v_pr	gf	max_pr	n_gf	pr_con	pr_frac
-unnamed-chunk-7	dcentral_v_as	dcentral_v_hs	dcentral_v_pr	dmax_as	dmax_hs	dmax_pr	gf_d
