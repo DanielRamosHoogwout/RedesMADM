@@ -1,8 +1,11 @@
 ---
 title: "Tarea 2"
-subtitle: "Redes Sociales y Económicas"
 author: "Daniel Ramos, Jordi Vanrell & Sergi Fornés"
-output: pdf_document
+subtitle: Redes Sociales y Económicas
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
 ---
 
 ```{r global_options, include=FALSE}
@@ -15,7 +18,7 @@ library(igraph)
 
 We shall consider again the undirected Facebook friendship network considered in the last handout. The links in this network are contained in the file **facebook_sample_anon.txt**. Download it on your computer and upload it to R as a dataframe. Define an undirected graph with this list of edges.
 
-Primero de todo cargamos el archivo, lo metemos en un data frame y lo convertimos en grado no dirigido.
+Primero de todo cargamos el archivo, lo metemos en un data frame y lo convertimos en un grafo no dirigido.
 
 ```{r}
 data <- read.table("./data/facebook_sample_anon.txt")
@@ -33,7 +36,7 @@ vec_con <- c()
 vec_frac <- c()
 # Miramos cuantos nodos tenemos que quitar
 round(0.001 * length(V(gf)))
-# Creamos un bucle en el que vamos quitando al grafo original 4 nodos aleatorios
+# Creamos un bucle en el que le vamos quitando al grafo original 4 nodos aleatorios
 #y analizamos el grafo resultante
 for (i in 1:1000){
   s <- sample(V(gf), size = 4, replace = FALSE)
@@ -123,16 +126,16 @@ Como es de esperar, quitar 4 nodos centrales tiene mucho mayor efecto en la cone
 
 **2)** Now, consider the same graph as a directed one, and find the hubs and authorities scores. Compare with the page rank score.
 
-Cargaremos de nuevo el grafo, pero esta vez será dirigido. Después comparamos de diversas formas la puntuación de page rank con las de HITS, primero buscando coincidencias en los nodos con mayores puntuaciones en cada caso, y después observando las correlaciones.
+Cargaremos de nuevo el grafo, pero esta vez será dirigido. Después comparamos de diversas formas la puntuación de PageRank con las de HITS, primero buscando coincidencias entre los nodos con mayores puntuaciones en cada caso, y después observando las correlaciones.
 
 ```{r}
 gf_d <- graph_from_data_frame(d = data, directed = T)
-# Calculamos los valores pagerank, hub y authority de los nodos del grafo dirigido
+# Calculamos los valores PageRank, hub y authority de los nodos del grafo dirigido
 V(gf_d)$pageRank <- page_rank(gf_d, directed = T)$vector
 V(gf_d)$hs <- hub_score(gf_d, weights = NA)$vector
 V(gf_d)$as <- authority_score(gf_d, weights = NA)$vector
 
-# Buscamos los 50 nodos con mayor pagerank
+# Buscamos los 50 nodos con mayor PageRank
 dmax_pr <- sort(V(gf_d)$pageRank, decreasing = TRUE)[1:50]
 dcentral_v_pr <- V(gf_d)[V(gf_d)$pageRank %in% dmax_pr]
 # Buscamos los 50 nodos con mayor hub
@@ -151,4 +154,4 @@ cor(V(gf_d)$pageRank, V(gf_d)$hs)
 cor(V(gf_d)$pageRank, V(gf_d)$as)
 ```
 
-Tiene sentido que authority y page rank estén más correlacionados porque ambas puntuaciones tienen en cuenta las aristas de entrada. Por otro lado, la puntuación hub solo tiene en cuenta las salidas, por lo que la correlación es menor.
+Tiene sentido que authority y PageRank estén más correlacionados (y tengan nodos comunes) ya que ambas puntuaciones tienen en cuenta las aristas de entrada. Por otro lado, la puntuación hub solo tiene en cuenta las salidas, por lo que la correlación es menor.
