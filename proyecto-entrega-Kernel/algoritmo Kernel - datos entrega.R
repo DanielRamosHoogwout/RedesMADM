@@ -4,7 +4,7 @@ library(tidyverse)
 # Nodos del 1 al 4 son citados
 # Nodos del 5 al 8 citan.
 
-data <- read.table("../../../Xarxes Socials i Econòmiques/Exercicis/webPageLinks.txt")
+data <- read.table("webPageLinks.txt")
 
 M <- data.matrix(data)
 
