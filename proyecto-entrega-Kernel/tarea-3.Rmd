@@ -1,0 +1,55 @@
+---
+title: "Tarea 3"
+author: "Daniel Ramos, Sergi Fornés & Jordi Vanrell"
+subtitle: Redes Sociales y Económicas
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(igraph)
+```
+
+1. Implementar el cálculo de las matrices de los núcleos de Neumann. La función debería tener dos parámetros: la matriz de adyacencia y el grado de difusión.
+
+```{r}
+NK <- function(A, gamma) {
+  G <- graph_from_adjacency_matrix(A)
+  # Calculamos el máximo grado de difusión posible
+  MIdg <- max(degree(G,mode="in"))
+  MOdg <- max(degree(G,mode="out"))
+  max_gamma <- 1/(min(MIdg,MOdg))
+  # Comprobamos que gamma no es excesivamente elevado
+  if(gamma > max_gamma) {
+    return(paste("Grado de difusión demasiado alto. El valor debe estar entre 0 y",
+                 round(max_gamma,3)))
+  }
+  K_ <- t(A) %*% A
+  T_ <- A %*% t(A)
+  output = list()
+  output$K_g <- K_ %*% solve(diag(nrow(A)) - gamma*K_)
+  output$T_g <- T_ %*% solve(diag(nrow(A)) - gamma*T_)
+  return(output)
+}
+```
+
+***
+
+2. Aplicar el algoritmo a la matriz de adyacencia de páginas webs: `webPageLinks.txt`.
+
+```{r}
+data <- as.matrix(read.table("webPageLinks.txt"))
+NK(data,0.15)
+```
+
+Con estos datos, responda las siguientes preguntas:
+
+  - Describe how the HITS algorithm relates to the Neumann Kernel technique.
+
+El algoritmo HITS puntúa los nodos en función de su indegree y outdegree. Si un nodo tiene indegree elevado querrá decir que muchos otros nodos le apuntan, y por lo tanto será un nodo vecino común a muchos nodos. Por lo tanto, este nodo será próximo en términos de importancia a muchos nodos en la matriz K de Neumann Kernel.
+
+  - How does the decay factor $\gamma$ affect the output of the Neumann Kernel algorithm?
+
+El grado de difusión es el parámetro que da importancia a los vecinos lejanos. Un grado de difusión pequeño produce outputs cercanos a "Shared Nearest Neighbor", ya que este algoritmo solo tiene en cuenta los vecinos más cercanos. Por el otro lado, un grado de difusión elevado produce outputs cercanos a "HITS", puesto que tendrá en cuenta todos los vecinos comunes, incluso los más lejanos.
