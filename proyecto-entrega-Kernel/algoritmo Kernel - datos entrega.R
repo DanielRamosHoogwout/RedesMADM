@@ -31,6 +31,8 @@ Kgamma_results <- Kgamma_results %>%
   mutate(V=colnames(data), .before=X2.33333333333333)
 View(Kgamma_results)
 
+Kgamma_results$V=1:100
+
 # T---------------------------------------------------------------------
 
 Tgamma <- tt %*% solve(diag(ncol(data)) - gamma*tt)
@@ -44,5 +46,7 @@ for (i in 1:nrow(Tgamma)){
 Tgamma_results <- Tgamma_results %>%
   mutate(V=colnames(data), .before=X0)
 View(Tgamma_results)
+
+Tgamma_results$V=1:100
 
 #-----------------------------------------------------------------------
