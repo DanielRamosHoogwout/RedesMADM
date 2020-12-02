@@ -10,6 +10,7 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(igraph)
+library(matrixcalc)
 ```
 
 1. Implementar el cálculo de las matrices de los núcleos de Neumann. La función debería tener dos parámetros: la matriz de adyacencia y el grado de difusión.
@@ -28,9 +29,17 @@ NK <- function(A, gamma) {
   }
   K_ <- t(A) %*% A
   T_ <- A %*% t(A)
+  sumK <- 0
+  sumT <- 0
+  for (i in 0:20) {
+    sumK <- sumK + (gamma^i)*(matrix.power(K_,i))
+    sumT <- sumT + (gamma^i)*(matrix.power(T_,i))
+  }
+  K_g <- K_ %*% sumK
+  T_g <- T_ %*% sumT
   output = list()
-  output$K_g <- K_ %*% solve(diag(nrow(A)) - gamma*K_)
-  output$T_g <- T_ %*% solve(diag(nrow(A)) - gamma*T_)
+  output$K_g <- K_g
+  output$T_g <- T_g
   return(output)
 }
 ```
@@ -41,6 +50,7 @@ NK <- function(A, gamma) {
 
 ```{r}
 data <- as.matrix(read.table("webPageLinks.txt"))
+<<<<<<< Updated upstream
 results <- NK(data,0.06)
 
 #results$K_g
@@ -74,6 +84,9 @@ G <- graph_from_adjacency_matrix(M)
 auth <- as.data.frame(authority.score(G)$vector) %>% min_rank %>% as.data.frame()
 auth_k07_3 <- cbind(results_4,auth)
 cor(results_4,auth)
+=======
+gf <- graph_from_adjacency_matrix(data)
+>>>>>>> Stashed changes
 ```
 
 
@@ -100,3 +113,31 @@ El algoritmo HITS puntúa los nodos en función de su indegree y outdegree. Si u
   - How does the decay factor $\gamma$ affect the output of the Neumann Kernel algorithm?
 
 El grado de difusión es el parámetro que da importancia a los vecinos lejanos. Un grado de difusión pequeño produce outputs cercanos a "Shared Nearest Neighbor", ya que este algoritmo solo tiene en cuenta los vecinos más cercanos. Por el otro lado, un grado de difusión elevado produce outputs cercanos a "HITS", puesto que tendrá en cuenta todos los vecinos comunes, incluso los más lejanos.
+
+```{r}
+# Calculamos el máximo grado de difusión posible
+MIdg <- max(degree(gf,mode="in"))
+MOdg <- max(degree(gf,mode="out"))
+max_gamma <- 1/(min(MIdg,MOdg))
+
+# Calculamos todos los scores que nos interesan
+hub <- hub_score(gf, weights = NA)$vector
+auth <- authority_score(gf, weights = NA)$vector
+NeuKern_maxK <- NK(data,max_gamma)$K_g %>% colSums
+NeuKern_maxT <- NK(data,max_gamma)$T_g %>% colSums
+NeuKern_minK <- NK(data,0)$K_g %>% colSums
+NeuKern_minT <- NK(data,0)$T_g %>% colSums
+
+# Calculamos las correlaciones
+cor(hub,NeuKern_maxT)
+cor(hub,NeuKern_minT)
+cor(auth,NeuKern_maxK)
+cor(auth,NeuKern_minK)
+```
+
+Efectivamente, como vemos en la tabla de correlaciones, cuando el $\gamma$ aumenta, HITS y Neumann Kernel convergen.
+
+Correlación | $\gamma=0$ | $\gamma= \frac{1}{min(\Delta^{+}(G), \Delta^{-}(G))}$                         
+--------------------|:--------------------:|:-----------------:
+Hub vs Importance ($\hat{T}_{\gamma}$) | `r round(cor(hub,NeuKern_minT), 3)` | `r cor(hub,NeuKern_maxT)`
+Authority vs Relevance ($\hat{K}_{\gamma}$) | `r round(cor(auth,NeuKern_minK), 3)` | `r cor(auth,NeuKern_maxK)`
