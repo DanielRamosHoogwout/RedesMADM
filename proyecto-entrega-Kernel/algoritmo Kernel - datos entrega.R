@@ -4,7 +4,7 @@ library(tidyverse)
 # Nodos del 1 al 4 son citados
 # Nodos del 5 al 8 citan.
 
-data <- read.table("webPageLinks.txt")
+data <- read.table("../proyecto-entrega-Kernel/webPageLinks.txt")
 
 M <- data.matrix(data)
 
@@ -31,7 +31,22 @@ Kgamma_results <- Kgamma_results %>%
   mutate(V=colnames(data), .before=X2.33333333333333)
 View(Kgamma_results)
 
-Kgamma_results$V=1:100
+# Kgamma_results$V=1:100
+
+
+auth <- as.data.frame(authority.score(G)$vector)
+auth <- auth %>% mutate(V=colnames(data), .before=`authority.score(G)$vector`)
+
+auth_k <- inner_join(Kgamma_results,auth)
+View(auth_k)
+
+newgamma <- 0
+
+auth_0 <- as.data.frame(authority.score(G_0)$vector)
+auth_0 <- auth_0 %>% mutate(V=colnames(data), .before=`authority.score(G_0)$vector`)
+
+auth_k0 <- inner_join(Kgamma0_results,auth_0)
+
 
 # T---------------------------------------------------------------------
 
@@ -47,6 +62,6 @@ Tgamma_results <- Tgamma_results %>%
   mutate(V=colnames(data), .before=X0)
 View(Tgamma_results)
 
-Tgamma_results$V=1:100
+#Tgamma_results$V=1:100
 
 #-----------------------------------------------------------------------
