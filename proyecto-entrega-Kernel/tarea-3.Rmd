@@ -35,11 +35,9 @@ NK <- function(A, gamma) {
     sumK <- sumK + (gamma^i)*(matrix.power(K_,i))
     sumT <- sumT + (gamma^i)*(matrix.power(T_,i))
   }
-  K_g <- K_ %*% sumK
-  T_g <- T_ %*% sumT
   output = list()
-  output$K_g <- K_g
-  output$T_g <- T_g
+  output$K_g <- K_ %*% sumK
+  output$T_g <- T_ %*% sumT
   return(output)
 }
 ```
@@ -50,59 +48,8 @@ NK <- function(A, gamma) {
 
 ```{r}
 data <- as.matrix(read.table("webPageLinks.txt"))
-<<<<<<< Updated upstream
-results <- NK(data,0.06)
-
-#results$K_g
-
-#for (i in 1:nrow(Kgamma)){
-#  Kgamma_newsum=sum(Kgamma[i,])
-#  Kgamma_results=rbind(Kgamma_results,Kgamma_newsum)
-#  rm(Kgamma_newsum)
-#}
-```
-
-```{r}
-library(tidyverse)
-results_2 <- as.data.frame(results$K_g) %>% rowSums() %>% as.data.frame() %>% 
-  mutate(V=colnames(data), .before='.')
-M <- data.matrix(data)
-G <- graph_from_adjacency_matrix(M)
-auth <- as.data.frame(authority.score(G)$vector) %>% mutate(V=colnames(data), .before=`authority.score(G)$vector`)
-auth_k07 <- inner_join(results_2,auth) %>% mutate()
-
-#results_3 <- as.data.frame(diag(results$K_g))
-#results_3 <- results_3 %>% t() %>% mutate(V=colnames(data), .before='.') %>% min_rank
-#auth_k07_2 <- inner_join(results_3,auth)
-```
-```{r}
-results_5 <- NK(data,0.06)
-results_4 <- as.data.frame(results_5$K_g) %>% rowSums() %>% as.data.frame() %>% 
-  min_rank %>% as.data.frame()
-M <- data.matrix(data)
-G <- graph_from_adjacency_matrix(M)
-auth <- as.data.frame(authority.score(G)$vector) %>% min_rank %>% as.data.frame()
-auth_k07_3 <- cbind(results_4,auth)
-cor(results_4,auth)
-=======
 gf <- graph_from_adjacency_matrix(data)
->>>>>>> Stashed changes
 ```
-
-
-```{r}
-results_3 <- NK(data,0)
-
-results_3 <- as.data.frame(results$K_g) %>% rowSums() %>% as.data.frame()
-results_3 <- results_3 %>% mutate(V=colnames(data), .before='.') 
-M <- data.matrix(data)
-G <- graph_from_adjacency_matrix(M)
-auth <- as.data.frame(authority.score(G)$vector)
-auth <- auth %>% mutate(V=colnames(data), .before=`authority.score(G)$vector`) %>% min_rank
-auth_k07 <- inner_join(results_2,auth)
-
-```
-
 
 Con estos datos, responda las siguientes preguntas:
 
