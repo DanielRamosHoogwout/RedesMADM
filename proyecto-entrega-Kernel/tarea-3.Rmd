@@ -82,7 +82,7 @@ cor(auth,NeuKern_maxK)
 cor(auth,NeuKern_minK)
 ```
 
-Efectivamente, como vemos en la tabla de correlaciones, cuando el $\gamma$ aumenta, HITS y Neumann Kernel convergen.
+Efectivamente, como vemos en la tabla de correlaciones, cuando el $\gamma$ aumenta, HITS y Neumann Kernel convergen, esto es debido a que al aumentar $\gamma$ se le da más peso a la importancia global que al grado de relación. Además se observa que cuando $\gamma = 0$ la correlación sigue siendo alta porque el grado de relación y la importancia están relacionadas.
 
 Correlación | $\gamma=0$ | $\gamma= \frac{1}{min(\Delta^{+}(G), \Delta^{-}(G))}$                         
 --------------------|:--------------------:|:-----------------:
