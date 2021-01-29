@@ -1,0 +1,38 @@
+---
+title: "Handout 4"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(fig.width=8, fig.height=8, fig.align="center", echo=TRUE, warning=FALSE, message=FALSE)
+library(knitr)
+library(igraph)
+```
+
+**1)** Generate an undirected random graph using the model of "preferential attachment" (sample_pa( )) of 1000 nodes. With $\beta=0.1$, $\gamma=0.1$, generate a SIR pandemic (iterative method). The initial infected nodes should be the 10 highest using the eigen_centrality( ). Compare the results to when the initial nodes are at random. Reduce or increase $\beta$ and compare. 
+
+**2)** Consider the random graph generated in the previous exercice. 
+
+*a)* Plot its degrees distribution in linear and in log-log scale. Which is more helpful to understand this distribution?
+
+*b)* Does the degree distribution follows a Power Law? And if we consider only the nodes with degree above 5? (or 10? or 100?)
+
+*c)* Find the best line that approximates the degree distribution after degree 10 (or 5?) using linear regression ( lm() ) on the log-log plane. Don't worry, it is almost all done in the following code. Explain in detail each line of the following code:
+```{r, eval=FALSE}
+D=degree_distribution(GRAPH) 
+xx=which(D>0)[-(1:10)]  # remove the first 10 prob values
+lyy=log(D[xx])
+lxx=log(xx)
+LMI=lm(lyy~lxx)$coefficients  # line coefficients
+plot(D,pch=20,cex=0.7,xlab="Degree",ylab="Frequencies",main="degrees",log="xy")
+points(exp(lxx),exp(LMI[1]+LMI[2]*lxx),col="red",type="l",lwd=2)
+```
+
+*d)* What is the exponent of the Power Law for the degree probabilities?
+
+
+**3)** Use the routine sample_pa( ) to generate a rich-get-richer (preferential attachment) graph with similar degree distribution of  the *directed* facebook graph of the file **facebook_sample_anon.txt**. Use the code similar to:
+sample_pa(n.GRAPH, out.seq=degree(GRAPH,mode="out"))
+Plot the degree distribution of the generated graph (log-log). What is the exponent of the power law of the generated graph for the in-degrees? 
