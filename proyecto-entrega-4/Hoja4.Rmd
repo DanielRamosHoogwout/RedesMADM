@@ -11,7 +11,46 @@ library(knitr)
 library(igraph)
 ```
 
-**1)** Generate an undirected random graph using the model of "preferential attachment" (sample_pa( )) of 1000 nodes. With $\beta=0.1$, $\gamma=0.1$, generate a SIR pandemic (iterative method). The initial infected nodes should be the 10 highest using the eigen_centrality( ). Compare the results to when the initial nodes are at random. Reduce or increase $\beta$ and compare. 
+**1)** Generate an undirected random graph using the model of "preferential attachment" (sample_pa( )) of 1000 nodes. With $\beta=0.1$, $\gamma=0.1$, generate a SIR pandemic (iterative method). The initial infected nodes should be the 10 highest using the eigen_centrality( ). Compare the results to when the initial nodes are at random. Reduce or increase $\beta$ and compare.
+
+```{r}
+library(igraph)
+set.seed(2021)
+G = sample_pa(1000, directed=F)
+A = as_adjacency_matrix(G)
+beta=0.1
+gamma = 0.1
+
+positions = order(eigen_centrality(G)$vector, decreasing=TRUE)[1:10]
+x0 = rep(0,1000)
+x0[positions] = 1
+
+rand_positions = sample(V(G),10)
+x0_ = rep(0,1000)
+x0_[rand_positions] = 1
+
+I = rep(1, 1000)
+newx <- function (x,beta,gamma) {
+  r = gamma*x
+  s = I - x - r
+  return ( x + beta * s* (A %*% x) - matrix(gamma*x) )
+}
+n=1000
+nIter=100
+RX=matrix(0,nrow=n,ncol=nIter)
+RX[,1]=x0
+for (i in 2:(nIter) ){
+  RX[,i] = as.vector(newx(RX[,i-1],beta,gamma))
+}
+
+RX_=matrix(0,nrow=n,ncol=nIter)
+RX_[,1]=x0_
+for (i in 2:(nIter) ){
+  RX_[,i] = as.vector(newx(RX_[,i-1],beta,gamma))
+}
+
+```
+
 
 **2)** Consider the random graph generated in the previous exercice. 
 
