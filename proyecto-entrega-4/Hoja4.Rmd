@@ -9,6 +9,7 @@ output:
 knitr::opts_chunk$set(fig.width=8, fig.height=8, fig.align="center", echo=TRUE, warning=FALSE, message=FALSE)
 library(knitr)
 library(igraph)
+library(ggplot2)
 ```
 
 **1)** Generate an undirected random graph using the model of "preferential attachment" (sample_pa( )) of 1000 nodes. With $\beta=0.1$, $\gamma=0.1$, generate a SIR pandemic (iterative method). The initial infected nodes should be the 10 highest using the eigen_centrality( ). Compare the results to when the initial nodes are at random. Reduce or increase $\beta$ and compare.
@@ -48,6 +49,20 @@ RX_[,1]=x0_
 for (i in 2:(nIter) ){
   RX_[,i] = as.vector(newx(RX_[,i-1],beta,gamma))
 }
+
+#Matriz en la cual si tienes más de 0.5 -> 1 en caso contrario 0
+chart <- matrix(0,nrow=n,ncol=nIter) 
+for (i in 1:n){
+  for(j in 1:nIter){
+    chart[i,j] <- ifelse(RX_[i,j]>0.5,1,0)
+  }
+}
+#Transformamos en dataframe
+chart <- as.data.frame(chart)
+#Sumamos los casos infectados por iteración
+infect <-colSums(chart, na.rm = TRUE)
+plot(infect, main= "Infectados totales", xlab = "Iteraciones", ylab = "Nº infectados")
+
 
 ```
 
