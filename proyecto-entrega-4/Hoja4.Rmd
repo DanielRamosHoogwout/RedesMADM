@@ -66,6 +66,52 @@ plot(infect, main= "Infectados totales", xlab = "Iteraciones", ylab = "Nº infec
 
 ```
 
+```{r}
+set.seed(2021)
+gf <- sample_pa(1000, directed=F)
+A <- as_adjacency_matrix(gf)
+beta <- 0.1
+gamma <- 0.1
+
+I <- rep(1, 1000)
+positions <- order(eigen_centrality(gf)$vector, decreasing = TRUE)[1:10]
+x <- rep(0, 1000)
+x[positions] <- 1
+v <- list(s = I - x, x = x, r = rep(0, 1000))
+count <- list(s = sum(v$s), x = sum(v$x), r = sum(v$r))
+
+upd <- function(s, x, r) {
+  probs_x <- pmin(pmax(beta * s * (A %*% x) - gamma * x, 0), 1)
+  probs_r <- pmin(pmax(gamma * x, 0), 1)
+  for(i in seq(length(x))) {
+    if(x[i] == 1 & rbinom(1,1,probs_r[i]) == 1) {
+      r[i] <- 1
+      x[i] <- 0
+    }
+    if(s[i] == 1 & rbinom(1,1,probs_x[i]) == 1) {
+      x[i] <- 1
+      s[i] <- 0
+    }
+  }
+  return(list(s = s, x = x, r = r))
+}
+
+n <- 100
+for(i in 2:n) {
+  v <- upd(v$s,v$x,v$r)
+  count$s[i] <- sum(v$s)
+  count$x[i] <- sum(v$x)
+  count$r[i] <- sum(v$r)
+}
+
+count <- data.frame(count$s, count$x, count$r)
+
+ggplot(count) +
+  geom_point(aes(x = seq(nrow(count)), y = count.s), color = "blue") +
+  geom_point(aes(x = seq(nrow(count)), y = count.x), color = "red") +
+  geom_point(aes(x = seq(nrow(count)), y = count.r), color = "green")
+```
+
 
 **2)** Consider the random graph generated in the previous exercice. 
 
