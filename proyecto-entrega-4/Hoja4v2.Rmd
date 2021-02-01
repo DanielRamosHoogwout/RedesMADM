@@ -1,0 +1,195 @@
+---
+title: "Handout 4"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(fig.width=8, fig.height=8, fig.align="center", echo=TRUE, warning=FALSE, message=FALSE)
+library(knitr)
+library(igraph)
+library(ggplot2)
+```
+
+**1)** Generate an undirected random graph using the model of "preferential attachment" (sample_pa( )) of 1000 nodes. With $\beta=0.1$, $\gamma=0.1$, generate a SIR pandemic (iterative method). The initial infected nodes should be the 10 highest using the eigen_centrality( ). Compare the results to when the initial nodes are at random. Reduce or increase $\beta$ and compare.
+
+
+```{r}
+set.seed(2021)
+gf <- sample_pa(1000, directed=F)
+A <- as_adjacency_matrix(gf)
+beta <- 0.1
+beta_b <- 0.05
+beta_B <- 0.4
+gamma <- 0.1
+
+I <- rep(1, 1000)
+positions <- order(eigen_centrality(gf)$vector, decreasing = TRUE)[1:10]
+x0 <- rep(0, 1000)
+x0[positions] <- 1
+s0 <- I - x0
+r0 <- rep(0, 1000)
+v <- list(s = s0, x = x0, r = r0)
+v_b <- list(s = s0, x = x0, r = r0)
+v_B <- list(s = s0, x = x0, r = r0)
+count <- list(s = sum(v$s), x = sum(v$x), r = sum(v$r))
+count_b <- list(s = sum(v$s), x = sum(v$x), r = sum(v$r))
+count_B <- list(s = sum(v$s), x = sum(v$x), r = sum(v$r))
+
+upd <- function(s, x, r, b, g) {
+  probs_x <- pmin(pmax(b * s * (A %*% x) - g * x, 0), 1)
+  probs_r <- pmin(pmax(g * x, 0), 1)
+  for(i in seq(length(x))) {
+    if(x[i] == 1 & rbinom(1,1,probs_r[i]) == 1) {
+      r[i] <- 1
+      x[i] <- 0
+    }
+    if(s[i] == 1 & rbinom(1,1,probs_x[i]) == 1) {
+      x[i] <- 1
+      s[i] <- 0
+    }
+  }
+  return(list(s = s, x = x, r = r))
+}
+
+n <- 50
+for(i in 2:n) {
+  v <- upd(v$s, v$x, v$r, beta, gamma)
+  count$s[i] <- sum(v$s)
+  count$x[i] <- sum(v$x)
+  count$r[i] <- sum(v$r)
+  v_b <- upd(v_b$s, v_b$x, v_b$r, beta_b, gamma)
+  count_b$s[i] <- sum(v_b$s)
+  count_b$x[i] <- sum(v_b$x)
+  count_b$r[i] <- sum(v_b$r)
+  v_B <- upd(v_B$s, v_B$x, v_B$r, beta_B, gamma)
+  count_B$s[i] <- sum(v_B$s)
+  count_B$x[i] <- sum(v_B$x)
+  count_B$r[i] <- sum(v_B$r)
+}
+
+count <- data.frame(count$s, count$x, count$r, count_b$s, count_b$x, count_b$r, count_B$s, count_B$x, count_B$r)
+
+ggplot(count) +
+  geom_point(aes(x = seq(nrow(count)), y = count.s), color = "blue") +
+  geom_point(aes(x = seq(nrow(count)), y = count.x), color = "red") +
+  geom_point(aes(x = seq(nrow(count)), y = count.r), color = "green") +
+  geom_point(aes(x = seq(nrow(count)), y = count_b.s), color = "blue", alpha = 0.2) +
+  geom_point(aes(x = seq(nrow(count)), y = count_b.x), color = "red", alpha = 0.2) +
+  geom_point(aes(x = seq(nrow(count)), y = count_b.r), color = "green", alpha = 0.2) +
+  geom_point(aes(x = seq(nrow(count)), y = count_B.s), color = "blue", alpha = 0.2) +
+  geom_point(aes(x = seq(nrow(count)), y = count_B.x), color = "red", alpha = 0.2) +
+  geom_point(aes(x = seq(nrow(count)), y = count_B.r), color = "green", alpha = 0.2)
+
+```
+
+```{r}
+positions <- sample(1:1000, 10)
+x0 <- rep(0, 1000)
+x0[positions] <- 1
+
+v <- list(s = s0, x = x0, r = r0)
+v_b <- list(s = s0, x = x0, r = r0)
+v_B <- list(s = s0, x = x0, r = r0)
+count <- list(s = sum(v$s), x = sum(v$x), r = sum(v$r))
+count_b <- list(s = sum(v$s), x = sum(v$x), r = sum(v$r))
+count_B <- list(s = sum(v$s), x = sum(v$x), r = sum(v$r))
+
+n <- 50
+for(i in 2:n) {
+  v <- upd(v$s, v$x, v$r, beta, gamma)
+  count$s[i] <- sum(v$s)
+  count$x[i] <- sum(v$x)
+  count$r[i] <- sum(v$r)
+  v_b <- upd(v_b$s, v_b$x, v_b$r, beta_b, gamma)
+  count_b$s[i] <- sum(v_b$s)
+  count_b$x[i] <- sum(v_b$x)
+  count_b$r[i] <- sum(v_b$r)
+  v_B <- upd(v_B$s, v_B$x, v_B$r, beta_B, gamma)
+  count_B$s[i] <- sum(v_B$s)
+  count_B$x[i] <- sum(v_B$x)
+  count_B$r[i] <- sum(v_B$r)
+}
+
+count <- data.frame(count$s, count$x, count$r, count_b$s, count_b$x, count_b$r, count_B$s, count_B$x, count_B$r)
+
+ggplot(count) +
+  geom_point(aes(x = seq(nrow(count)), y = count.s), color = "blue") +
+  geom_point(aes(x = seq(nrow(count)), y = count.x), color = "red") +
+  geom_point(aes(x = seq(nrow(count)), y = count.r), color = "green") +
+  geom_point(aes(x = seq(nrow(count)), y = count_b.s), color = "blue", alpha = 0.2) +
+  geom_point(aes(x = seq(nrow(count)), y = count_b.x), color = "red", alpha = 0.2) +
+  geom_point(aes(x = seq(nrow(count)), y = count_b.r), color = "green", alpha = 0.2) +
+  geom_point(aes(x = seq(nrow(count)), y = count_B.s), color = "blue", alpha = 0.2) +
+  geom_point(aes(x = seq(nrow(count)), y = count_B.x), color = "red", alpha = 0.2) +
+  geom_point(aes(x = seq(nrow(count)), y = count_B.r), color = "green", alpha = 0.2)
+```
+
+***
+
+**2)** Consider the random graph generated in the previous exercice. 
+
+*a)* Plot its degrees distribution in linear and in log-log scale. Which is more helpful to understand this distribution?
+
+```{r}
+plot(sort(degree(gf), decreasing = TRUE))
+```
+```{r}
+plot(sort(degree(gf), decreasing = TRUE), log = "xy")
+```
+
+log-log is more helpful
+
+*b)* Does the degree distribution follows a Power Law? And if we consider only the nodes with degree above 5? (or 10? or 100?)
+
+```{r}
+plot(sort(degree(gf), decreasing = TRUE)[which(sort(degree(gf), decreasing = TRUE) > 5)], log = "xy")
+
+plot(sort(degree(gf), decreasing = TRUE)[which(sort(degree(gf), decreasing = TRUE) > 10)], log = "xy")
+
+
+which(D>0)[-(1:10)]
+
+
+```
+
+Seguramente siga power law.
+
+*c)* Find the best line that approximates the degree distribution after degree 10 (or 5?) using linear regression ( lm() ) on the log-log plane. Don't worry, it is almost all done in the following code. Explain in detail each line of the following code:
+
+```{r, eval=FALSE}
+D=degree_distribution(gf)
+xx=which(D>0)[-(1:5)]  # remove the first 5 prob values
+lyy=log(D[xx])
+lxx=log(xx)
+LMI=lm(lyy~lxx)$coefficients  # line coefficients
+plot(D,pch=20,cex=0.7,xlab="Degree",ylab="Frequencies",main="degrees", log = "xy", xlim = c(5, 43), ylim = c(0.0001,0.01))
+points(exp(lxx),exp(LMI[1]+LMI[2]*lxx),col="red",type="l",lwd=2)
+```
+
+
+* `D=degree_distribution(GRAPH)`: Se obtiene un vector D con las frecuencias relativas de cada grado, es decir, el primer valor es la frecuencia relativa de los nodos de grado 0, el segundo valor la frecuencia de grado 1,...
+
+* `xx=which(D>0)[-(1:10)]`: Se eliminan las frecuencias de los nodos con grado 10 o menos.
+
+* `lyy=log(D[xx])`: Se transforma en logaritmo las frecuencias relativas de los grados restantes.
+
+* `lxx=log(xx)`: Se transforma en logaritmo los grados.
+
+* `LMI=lm(lyy~lxx)$coefficients`: Se obtienen los coeficientes de la regresión lineal de `lxx` sobre `lyy`.
+
+* `plot(D,pch=20,cex=0.7,xlab="Degree",ylab="Frequencies",main="degrees", log = "xy", xlim = c(5, 43), ylim = c(0.0001,0.01))`: Se grafican los logaritmos de las frecuencias relativas en función de los logaritmos de los grados.
+
+* `points(exp(lxx),exp(LMI[1]+LMI[2]*lxx),col="red",type="l",lwd=2)`: Se grafica la recta de regresión.
+
+
+*d)* What is the exponent of the Power Law for the degree probabilities?
+
+
+
+***
+
+**3)** Use the routine sample_pa( ) to generate a rich-get-richer (preferential attachment) graph with similar degree distribution of  the *directed* facebook graph of the file **facebook_sample_anon.txt**. Use the code similar to:
+sample_pa(n.GRAPH, out.seq=degree(GRAPH,mode="out"))
+Plot the degree distribution of the generated graph (log-log). What is the exponent of the power law of the generated graph for the in-degrees? 
