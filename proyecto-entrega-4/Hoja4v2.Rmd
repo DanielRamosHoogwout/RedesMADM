@@ -185,6 +185,10 @@ points(exp(lxx),exp(LMI[1]+LMI[2]*lxx),col="red",type="l",lwd=2)
 
 
 *d)* What is the exponent of the Power Law for the degree probabilities?
+```{r}
+alpha = -LMI[[2]]
+alpha
+```
 
 
 
@@ -197,7 +201,21 @@ Plot the degree distribution of the generated graph (log-log). What is the expon
 ```{r}
 links=read.table("../proyecto-entrega-1/data/facebook_sample_anon.txt", header=FALSE, as.is=T)
 facenet=graph_from_data_frame(d=links, directed=FALSE)
-ngf <- sample_pa(vcount(facenet), out.seq=degree(facenet,mode="out"))
+ngf <- sample_pa(vcount(facenet), out.seq=degree(facenet,mode="in"))#Lo he cambiado a "in" era "out"
 plot(sort(degree(ngf), decreasing = TRUE), log = "xy")
+
+#Calculamos el exponente
+d = degree(ngf, mode = "in")
+dd = degree.distribution(ngf, mode = "in", cumulative = FALSE)
+degree = 1:max(d)
+probability = dd[-1]
+# delete blank values
+nonzero.position = which(probability != 0)
+probability = probability[nonzero.position]
+degree = degree[nonzero.position]
+reg = lm(log(probability) ~ log(degree))
+cozf = coef(reg)
+alpha = -cozf[[2]]
+alpha
 ```
 
