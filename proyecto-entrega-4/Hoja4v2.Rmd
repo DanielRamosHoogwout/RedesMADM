@@ -192,4 +192,12 @@ points(exp(lxx),exp(LMI[1]+LMI[2]*lxx),col="red",type="l",lwd=2)
 
 **3)** Use the routine sample_pa( ) to generate a rich-get-richer (preferential attachment) graph with similar degree distribution of  the *directed* facebook graph of the file **facebook_sample_anon.txt**. Use the code similar to:
 sample_pa(n.GRAPH, out.seq=degree(GRAPH,mode="out"))
-Plot the degree distribution of the generated graph (log-log). What is the exponent of the power law of the generated graph for the in-degrees? 
+Plot the degree distribution of the generated graph (log-log). What is the exponent of the power law of the generated graph for the in-degrees?
+
+```{r}
+links=read.table("../proyecto-entrega-1/data/facebook_sample_anon.txt", header=FALSE, as.is=T)
+facenet=graph_from_data_frame(d=links, directed=FALSE)
+ngf <- sample_pa(vcount(facenet), out.seq=degree(facenet,mode="out"))
+plot(sort(degree(ngf), decreasing = TRUE), log = "xy")
+```
+
