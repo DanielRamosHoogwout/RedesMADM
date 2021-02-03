@@ -163,13 +163,6 @@ En los gráficos se puede ver la importancia de que los nodos iniciales se encue
 *a)* Plot its degrees distribution in linear and in log-log scale. Which is more helpful to understand this distribution?
 
 ```{r}
-# plot(sort(degree(gf), decreasing = TRUE))
-
-# plot(sort(degree(gf), decreasing = TRUE), log = "xy")
-# ??? CUANDO JAIRO HOY HABLABA DE DISTRIBUCIONES DE GRADOS HA ESTADO TRABAJANDO CON SUS DISTRIBUCIONES DE PROBABILIDAD, YO PONDRÍA EL GRÁFICO DE MÁS ABAJO
-```
-
-```{r}
 dist <- degree_distribution(gf)
 deg_dist <- data_frame(deg = seq(0,length(dist)-1), prob = dist) %>%
   filter(prob > 0)
@@ -188,7 +181,6 @@ plot2 <- ggplot(deg_dist) +
 grid.arrange(plot, plot2, nrow = 2)
 ```
 
-
 El gráfico en escala log-log es más fácil de interpretar que en escala lineal.
 
 ***
@@ -196,14 +188,6 @@ El gráfico en escala log-log es más fácil de interpretar que en escala lineal
 *b)* Does the degree distribution follows a Power Law? And if we consider only the nodes with degree above 5? (or 10? or 100?)
 
 En el gráfico log-log del apartado *(a)* parece que los grados siguen una recta, por lo que es un indicio que la distribución puede seguir una ley potencial. Veamos lo que pasa cuando consideramos unicamente los grados mayores de 5.
-
-```{r}
-#plot(sort(degree(gf), decreasing = TRUE)[which(sort(degree(gf), decreasing = TRUE) > 5)], log = "xy")
-
-#plot(sort(degree(gf), decreasing = TRUE)[which(sort(degree(gf), decreasing = TRUE) > 10)], log = "xy") 
-
-# ???? NECESARIO HACERLO TAMBIÉN CON 10?
-```
 
 ```{r}
 ggplot(filter(deg_dist, deg > 5)) +
@@ -215,14 +199,14 @@ ggplot(filter(deg_dist, deg > 5)) +
   ylab("Probability")
 ```
 
-En este caso no parece que los grados sigan una recta. Hay muchos valores que son 0 o 0.001 debido a que hay muy pocos nodos de grado mayor de 13, pero si el grafo fuera mayor a lo mejor se seguiría viendo la relación lineal.
+En este caso no queda tan claro que los grados siguen una recta. Hay muchos valores que son 0 o 0.001 debido a que hay muy pocos nodos de grado mayor de 13, pero si el grafo fuera mayor a lo mejor se seguiría viendo la relación lineal.
 
 ***
 
 *c)* Find the best line that approximates the degree distribution after degree 10 (or 5?) using linear regression (`lm()`) on the log-log plane. Don't worry, it is almost all done in the following code. Explain in detail each line of the following code:
 
 ```{r, eval=FALSE}
-D=degree_distribution(GRAPH) 
+D=degree_distribution(gf) 
 xx=which(D>0)[-(1:10)]  # remove the first 10 prob values
 lyy=log(D[xx])
 lxx=log(xx)
@@ -248,11 +232,12 @@ points(exp(lxx),exp(LMI[1]+LMI[2]*lxx),col="red",type="l",lwd=2)
 ***
 
 *d)* What is the exponent of the Power Law for the degree probabilities?
+
+El exponente es el valor absoluto de la pendiente de la recta que se forma usando la escala log-log:
+
 ```{r}
-# LO DEJO COMENTADO PORQUE AL HACER KNIT DA ERROR, LMI NO EXISTE PORQUE JAIRO HA PUESTO EL CHUNK DEL APARTADO C EN EVAL=FALSE
-#alpha = -LMI[[2]]
-#alpha
-# ????? EL EXPONENTE EL EL COEFICIENTE DE LA RECTA DE REGRESIÓN, PERO HAY QUE HACER OTRA VEZ LA REGRESIÓN CON TODOS LOS GRADOS? ANTES SE HAN OMITIDO LOS GRADOS MENORES DE 10
+lm_fit <- lm(log(prob) ~ log(deg), data = deg_dist)
+-lm_fit$coefficients[2]
 ```
 
 ***
