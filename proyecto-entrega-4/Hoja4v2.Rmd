@@ -86,15 +86,15 @@ count <- data.frame(count$s, count$x, count$r,
 
 # Creamos el gráfico
 plot <- ggplot(count) +
-  geom_point(aes(x = seq(nrow(count)), y = count_b.s), color = "blue", alpha = 0.2) +
-  geom_point(aes(x = seq(nrow(count)), y = count_b.x), color = "red", alpha = 0.2) +
-  geom_point(aes(x = seq(nrow(count)), y = count_b.r), color = "green", alpha = 0.2) +
-  geom_point(aes(x = seq(nrow(count)), y = count_B.s), color = "blue", alpha = 0.2) +
-  geom_point(aes(x = seq(nrow(count)), y = count_B.x), color = "red", alpha = 0.2) +
-  geom_point(aes(x = seq(nrow(count)), y = count_B.r), color = "green", alpha = 0.2) +
-  geom_point(aes(x = seq(nrow(count)), y = count.s), color = "blue") +
-  geom_point(aes(x = seq(nrow(count)), y = count.x), color = "red") +
-  geom_point(aes(x = seq(nrow(count)), y = count.r), color = "green") +
+  geom_line(aes(x = seq(nrow(count)), y = count_b.s), color = "blue", lwd = 1, linetype = "dotted") +
+  geom_line(aes(x = seq(nrow(count)), y = count_b.x), color = "red", lwd = 1, linetype = "dotted") +
+  geom_line(aes(x = seq(nrow(count)), y = count_b.r), color = "forestgreen", lwd = 1, linetype = "dotted") +
+  geom_line(aes(x = seq(nrow(count)), y = count_B.s), color = "blue", lwd = 1, linetype = "dashed") +
+  geom_line(aes(x = seq(nrow(count)), y = count_B.x), color = "red", lwd = 1, linetype = "dashed") +
+  geom_line(aes(x = seq(nrow(count)), y = count_B.r), color = "forestgreen", lwd = 1, linetype = "dashed") +
+  geom_line(aes(x = seq(nrow(count)), y = count.s), color = "blue", lwd = 1) +
+  geom_line(aes(x = seq(nrow(count)), y = count.x), color = "red", lwd = 1) +
+  geom_line(aes(x = seq(nrow(count)), y = count.r), color = "forestgreen", lwd = 1) +
   ggtitle("Nodos iniciales más centrales") +
   xlab("t") +
   ylab("Cantidad de nodos")
@@ -134,25 +134,24 @@ count <- data.frame(count$s, count$x, count$r,
                     count_B$s, count_B$x, count_B$r)
 
 plot2 <- ggplot(count) +
-  geom_point(aes(x = seq(nrow(count)), y = count_b.s), color = "blue", alpha = 0.2) +
-  geom_point(aes(x = seq(nrow(count)), y = count_b.x), color = "red", alpha = 0.2) +
-  geom_point(aes(x = seq(nrow(count)), y = count_b.r), color = "green", alpha = 0.2) +
-  geom_point(aes(x = seq(nrow(count)), y = count_B.s), color = "blue", alpha = 0.2) +
-  geom_point(aes(x = seq(nrow(count)), y = count_B.x), color = "red", alpha = 0.2) +
-  geom_point(aes(x = seq(nrow(count)), y = count_B.r), color = "green", alpha = 0.2) +
-  geom_point(aes(x = seq(nrow(count)), y = count.s), color = "blue") +
-  geom_point(aes(x = seq(nrow(count)), y = count.x), color = "red") +
-  geom_point(aes(x = seq(nrow(count)), y = count.r), color = "green") +
+  geom_line(aes(x = seq(nrow(count)), y = count_b.s), color = "blue", lwd = 1, linetype = "dotted") +
+  geom_line(aes(x = seq(nrow(count)), y = count_b.x), color = "red", lwd = 1, linetype = "dotted") +
+  geom_line(aes(x = seq(nrow(count)), y = count_b.r), color = "forestgreen", lwd = 1, linetype = "dotted") +
+  geom_line(aes(x = seq(nrow(count)), y = count_B.s), color = "blue", lwd = 1, linetype = "dashed") +
+  geom_line(aes(x = seq(nrow(count)), y = count_B.x), color = "red", lwd = 1, linetype = "dashed") +
+  geom_line(aes(x = seq(nrow(count)), y = count_B.r), color = "forestgreen", lwd = 1, linetype = "dashed") +
+  geom_line(aes(x = seq(nrow(count)), y = count.s), color = "blue", lwd = 1) +
+  geom_line(aes(x = seq(nrow(count)), y = count.x), color = "red", lwd = 1) +
+  geom_line(aes(x = seq(nrow(count)), y = count.r), color = "forestgreen", lwd = 1) +
   ggtitle("Nodos iniciales al azar") +
   xlab("t") +
   ylab("Cantidad de nodos")
-
 
 # Imprimimos los gráficos
 grid.arrange(plot, plot2, nrow = 1)
 ```
 
-Por una parte, los puntos de color azul representan los nodos susceptibles, los de color rojo representan los infectados, y los de color verde representan los recuperados. Por otra, los puntos opacos son del modelo SIR con $\beta=0.1$ y $\gamma=0.1$, mientras que los puntos transparentes se han obtenido con valores de $\beta=0.05$ y $\beta=0.4$.
+Por una parte, las lineas de color azul representan los nodos susceptibles, las de color rojo representan los infectados, y las de color verde representan los recuperados. Por otra, las lineas continuas son del modelo SIR con $\beta=0.1$ y $\gamma=0.1$, mientras que las lineas de puntos son para cuando $\beta =0.05$ y las lineas discontinuas son para $\beta=0.4$.
 
 En los gráficos se puede ver la importancia de que los nodos iniciales se encuentren en el centro del grafo. En ese caso, y con valores $\beta$ pequeños, la infección se produce más rápidamente y llega a más nodos. Pero si elegimos una tasa de contagio $\beta$ suficientemente alta, parece que la cantidad total de nodos infectados es mayor si los nodos infectados inicialmente se encuentran repartidos al azar en el grafo.
 
@@ -237,7 +236,7 @@ El exponente es el valor absoluto de la pendiente de la recta que se forma usand
 
 ```{r}
 lm_fit <- lm(log(prob) ~ log(deg), data = deg_dist)
--lm_fit$coefficients[2]
+as.vector(-lm_fit$coefficients[2])
 ```
 
 ***
@@ -249,17 +248,26 @@ lm_fit <- lm(log(prob) ~ log(deg), data = deg_dist)
 Plot the degree distribution of the generated graph (log-log). What is the exponent of the power law of the generated graph for the in-degrees?
 
 ```{r}
-links=read.table("../proyecto-entrega-1/data/facebook_sample_anon.txt", header=FALSE, as.is=T)
-facenet=graph_from_data_frame(d=links, directed=FALSE)
-ngf <- sample_pa(vcount(facenet), out.seq=degree(facenet,mode="in"))#Lo he cambiado a "in" era "out"
-plot(sort(degree(ngf), decreasing = TRUE), log = "xy")
+links <- read.table("data/facebook_sample_anon.txt", header = FALSE, as.is = T)
+facenet <- graph_from_data_frame(d = links, directed = FALSE)
+ngf <- sample_pa(vcount(facenet), out.seq = degree(facenet, mode = "out"))
+
+ndeg_dist <- data_frame(deg = seq(0,length(degree_distribution(ngf))-1), prob = degree_distribution(ngf)) %>%
+  filter(prob > 0)
+
+ggplot(ndeg_dist) +
+  geom_point(aes(x = deg, y = prob)) +
+  scale_x_log10() +
+  scale_y_log10() +
+  ggtitle("Degree distribution in log-log scale") +
+  xlab("Degree") +
+  ylab("Probability")
 
 #Calculamos el exponente
-d = degree(ngf, mode = "in")
+d <- degree(ngf, mode = "in")
 dd = degree.distribution(ngf, mode = "in", cumulative = FALSE)
 degree = 1:max(d)
 probability = dd[-1]
-# delete blank values
 nonzero.position = which(probability != 0)
 probability = probability[nonzero.position]
 degree = degree[nonzero.position]
