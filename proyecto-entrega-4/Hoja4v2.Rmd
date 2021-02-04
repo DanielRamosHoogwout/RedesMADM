@@ -15,7 +15,7 @@ library(tidyverse)
 library(gridExtra)
 ```
 
-**1)** Generate an undirected random graph using the model of "preferential attachment" (`sample_pa( )`) of 1000 nodes. With $\beta=0.1$, $\gamma=0.1$, generate a SIR pandemic (iterative method). The initial infected nodes should be the 10 highest using the `eigen_centrality( )`. Compare the results to when the initial nodes are at random. Reduce or increase $\beta$ and compare.
+**1)** Generate an undirected random graph using the model of "preferential attachment" (`sample_pa()`) of 1000 nodes. With $\beta=0.1$, $\gamma=0.1$, generate a SIR pandemic (iterative method). The initial infected nodes should be the 10 highest using the `eigen_centrality()`. Compare the results to when the initial nodes are at random. Reduce or increase $\beta$ and compare.
 
 ```{r}
 # Generamos el grafo
@@ -86,15 +86,24 @@ count <- data.frame(count$s, count$x, count$r,
 
 # Creamos el gráfico
 plot <- ggplot(count) +
-  geom_line(aes(x = seq(nrow(count)), y = count_b.s), color = "blue", lwd = 1, linetype = "dotted") +
-  geom_line(aes(x = seq(nrow(count)), y = count_b.x), color = "red", lwd = 1, linetype = "dotted") +
-  geom_line(aes(x = seq(nrow(count)), y = count_b.r), color = "forestgreen", lwd = 1, linetype = "dotted") +
-  geom_line(aes(x = seq(nrow(count)), y = count_B.s), color = "blue", lwd = 1, linetype = "dashed") +
-  geom_line(aes(x = seq(nrow(count)), y = count_B.x), color = "red", lwd = 1, linetype = "dashed") +
-  geom_line(aes(x = seq(nrow(count)), y = count_B.r), color = "forestgreen", lwd = 1, linetype = "dashed") +
-  geom_line(aes(x = seq(nrow(count)), y = count.s), color = "blue", lwd = 1) +
-  geom_line(aes(x = seq(nrow(count)), y = count.x), color = "red", lwd = 1) +
-  geom_line(aes(x = seq(nrow(count)), y = count.r), color = "forestgreen", lwd = 1) +
+  geom_line(aes(x = seq(nrow(count)), y = count_b.s),
+            color = "blue", lwd = 1, linetype = "dotted") +
+  geom_line(aes(x = seq(nrow(count)), y = count_b.x),
+            color = "red", lwd = 1, linetype = "dotted") +
+  geom_line(aes(x = seq(nrow(count)), y = count_b.r),
+            color = "forestgreen", lwd = 1, linetype = "dotted") +
+  geom_line(aes(x = seq(nrow(count)), y = count_B.s),
+            color = "blue", lwd = 1, linetype = "dashed") +
+  geom_line(aes(x = seq(nrow(count)), y = count_B.x),
+            color = "red", lwd = 1, linetype = "dashed") +
+  geom_line(aes(x = seq(nrow(count)), y = count_B.r),
+            color = "forestgreen", lwd = 1, linetype = "dashed") +
+  geom_line(aes(x = seq(nrow(count)), y = count.s),
+            color = "blue", lwd = 1) +
+  geom_line(aes(x = seq(nrow(count)), y = count.x),
+            color = "red", lwd = 1) +
+  geom_line(aes(x = seq(nrow(count)), y = count.r),
+            color = "forestgreen", lwd = 1) +
   ggtitle("Nodos iniciales más centrales") +
   xlab("t") +
   ylab("Cantidad de nodos")
@@ -134,15 +143,24 @@ count <- data.frame(count$s, count$x, count$r,
                     count_B$s, count_B$x, count_B$r)
 
 plot2 <- ggplot(count) +
-  geom_line(aes(x = seq(nrow(count)), y = count_b.s), color = "blue", lwd = 1, linetype = "dotted") +
-  geom_line(aes(x = seq(nrow(count)), y = count_b.x), color = "red", lwd = 1, linetype = "dotted") +
-  geom_line(aes(x = seq(nrow(count)), y = count_b.r), color = "forestgreen", lwd = 1, linetype = "dotted") +
-  geom_line(aes(x = seq(nrow(count)), y = count_B.s), color = "blue", lwd = 1, linetype = "dashed") +
-  geom_line(aes(x = seq(nrow(count)), y = count_B.x), color = "red", lwd = 1, linetype = "dashed") +
-  geom_line(aes(x = seq(nrow(count)), y = count_B.r), color = "forestgreen", lwd = 1, linetype = "dashed") +
-  geom_line(aes(x = seq(nrow(count)), y = count.s), color = "blue", lwd = 1) +
-  geom_line(aes(x = seq(nrow(count)), y = count.x), color = "red", lwd = 1) +
-  geom_line(aes(x = seq(nrow(count)), y = count.r), color = "forestgreen", lwd = 1) +
+  geom_line(aes(x = seq(nrow(count)), y = count_b.s),
+            color = "blue", lwd = 1, linetype = "dotted") +
+  geom_line(aes(x = seq(nrow(count)), y = count_b.x),
+            color = "red", lwd = 1, linetype = "dotted") +
+  geom_line(aes(x = seq(nrow(count)), y = count_b.r),
+            color = "forestgreen", lwd = 1, linetype = "dotted") +
+  geom_line(aes(x = seq(nrow(count)), y = count_B.s),
+            color = "blue", lwd = 1, linetype = "dashed") +
+  geom_line(aes(x = seq(nrow(count)), y = count_B.x),
+            color = "red", lwd = 1, linetype = "dashed") +
+  geom_line(aes(x = seq(nrow(count)), y = count_B.r),
+            color = "forestgreen", lwd = 1, linetype = "dashed") +
+  geom_line(aes(x = seq(nrow(count)), y = count.s),
+            color = "blue", lwd = 1) +
+  geom_line(aes(x = seq(nrow(count)), y = count.x),
+            color = "red", lwd = 1) +
+  geom_line(aes(x = seq(nrow(count)), y = count.r),
+            color = "forestgreen", lwd = 1) +
   ggtitle("Nodos iniciales al azar") +
   xlab("t") +
   ylab("Cantidad de nodos")
@@ -248,13 +266,16 @@ as.vector(-lm_fit$coefficients[2])
 Plot the degree distribution of the generated graph (log-log). What is the exponent of the power law of the generated graph for the in-degrees?
 
 ```{r}
-links <- read.table("data/facebook_sample_anon.txt", header = FALSE, as.is = T)
-facenet <- graph_from_data_frame(d = links, directed = FALSE)
+# Importamos el grafo de facebook
+links <- read.table("data/facebook_sample_anon.txt", header = FALSE, as.is = TRUE)
+facenet <- graph_from_data_frame(d = links)
+# Creamos un grafo con la misma distribución de grados
 ngf <- sample_pa(vcount(facenet), out.seq = degree(facenet, mode = "out"))
-
-ndeg_dist <- data_frame(deg = seq(0,length(degree_distribution(ngf))-1), prob = degree_distribution(ngf)) %>%
-  filter(prob > 0)
-
+# Obtenemos su distribución
+ndeg_dist <- data_frame(deg = seq(0, length(degree_distribution(ngf, mode = "in")) - 1),
+                        prob = degree_distribution(ngf, mode = "in")) %>%
+  filter(prob > 0, deg > 0)
+# La imprimimos
 ggplot(ndeg_dist) +
   geom_point(aes(x = deg, y = prob)) +
   scale_x_log10() +
@@ -263,17 +284,45 @@ ggplot(ndeg_dist) +
   xlab("Degree") +
   ylab("Probability")
 
-#Calculamos el exponente
-d <- degree(ngf, mode = "in")
-dd = degree.distribution(ngf, mode = "in", cumulative = FALSE)
-degree = 1:max(d)
-probability = dd[-1]
-nonzero.position = which(probability != 0)
-probability = probability[nonzero.position]
-degree = degree[nonzero.position]
-reg = lm(log(probability) ~ log(degree))
-cozf = coef(reg)
-alpha = -cozf[[2]]
-alpha
+# Calculamos el exponente
+fit_power_law(ndeg_dist$prob)$alpha
+
+# Observamos si el exponente del grafo de facebook es parecido
+fb <- data_frame(deg = seq(0, length(degree_distribution(facenet, mode = "in")) - 1),
+                 prob = degree_distribution(facenet, mode = "in")) %>%
+  filter(prob > 0, deg > 0)
+fit_power_law(fb$prob)$alpha
+
+
+
+
+
+
+## ?????????????????????
+# EXPONENTE DE FACEBOOK DEBERÍA SER PARECIDO, PERO NO LO ES, LA FORMULA QUE NOS HA DADO JAIRO PARA QUE LA DISTRIBUCIÓN SEA PARECIDA ES UNA CACA
+## ?????????????????????
+#fb <- data_frame(deg = seq(0, length(degree_distribution(facenet, mode = "in")) - 1), prob = degree_distribution(facenet, mode = "in")) %>%
+#  filter(prob > 0, deg > 0)
+#ggplot(test) +
+#  geom_point(aes(x = deg, y = prob)) +
+#  scale_x_log10() +
+#  scale_y_log10() +
+#  ggtitle("Degree distribution in log-log scale") +
+#  xlab("Degree") +
+#  ylab("Probability")
+#fit <- lm(log(prob) ~ log(deg), data = test)
+#fit
+
+# A partir del grado 100, las probabilidades son mínimas por lo que estropean la regresión
+# Quitamos esos grados
+#ndeg_dist <- filter(ndeg_dist, deg < 100)
+
+# Calculamos el exponente
+#lm_fit_face <- lm(log(prob) ~ log(deg), data = ndeg_dist)
+#as.vector(-lm_fit_face$coefficients[2])
+
+
+
 ```
 
+??????????[EXPLICAR]
