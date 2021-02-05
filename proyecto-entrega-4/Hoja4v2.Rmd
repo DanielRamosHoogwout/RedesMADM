@@ -270,6 +270,7 @@ Plot the degree distribution of the generated graph (log-log). What is the expon
 links <- read.table("data/facebook_sample_anon.txt", header = FALSE, as.is = TRUE)
 facenet <- graph_from_data_frame(d = links)
 # Creamos un grafo con la misma distribución de grados
+set.seed(111)
 ngf <- sample_pa(vcount(facenet), out.seq = degree(facenet, mode = "out"))
 # Obtenemos su distribución
 ndeg_dist <- data_frame(deg = seq(0, length(degree_distribution(ngf, mode = "in")) - 1),
@@ -285,44 +286,7 @@ ggplot(ndeg_dist) +
   ylab("Probability")
 
 # Calculamos el exponente
-fit_power_law(ndeg_dist$prob)$alpha
-
-# Observamos si el exponente del grafo de facebook es parecido
-fb <- data_frame(deg = seq(0, length(degree_distribution(facenet, mode = "in")) - 1),
-                 prob = degree_distribution(facenet, mode = "in")) %>%
-  filter(prob > 0, deg > 0)
-fit_power_law(fb$prob)$alpha
-
-
-
-
-
-
-## ?????????????????????
-# EXPONENTE DE FACEBOOK DEBERÍA SER PARECIDO, PERO NO LO ES, LA FORMULA QUE NOS HA DADO JAIRO PARA QUE LA DISTRIBUCIÓN SEA PARECIDA ES UNA CACA
-## ?????????????????????
-#fb <- data_frame(deg = seq(0, length(degree_distribution(facenet, mode = "in")) - 1), prob = degree_distribution(facenet, mode = "in")) %>%
-#  filter(prob > 0, deg > 0)
-#ggplot(test) +
-#  geom_point(aes(x = deg, y = prob)) +
-#  scale_x_log10() +
-#  scale_y_log10() +
-#  ggtitle("Degree distribution in log-log scale") +
-#  xlab("Degree") +
-#  ylab("Probability")
-#fit <- lm(log(prob) ~ log(deg), data = test)
-#fit
-
-# A partir del grado 100, las probabilidades son mínimas por lo que estropean la regresión
-# Quitamos esos grados
-#ndeg_dist <- filter(ndeg_dist, deg < 100)
-
-# Calculamos el exponente
-#lm_fit_face <- lm(log(prob) ~ log(deg), data = ndeg_dist)
-#as.vector(-lm_fit_face$coefficients[2])
-
-
-
+expPL <- fit_power_law(ndeg_dist$prob)$alpha
 ```
 
-??????????[EXPLICAR]
+El exponente de la ley potencial del grafo generado es de `r round(expPL, 3)`.
