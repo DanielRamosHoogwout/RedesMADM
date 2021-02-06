@@ -222,9 +222,9 @@ En este caso no queda tan claro que los grados siguen una recta. Hay muchos valo
 
 *c)* Find the best line that approximates the degree distribution after degree 10 (or 5?) using linear regression (`lm()`) on the log-log plane. Don't worry, it is almost all done in the following code. Explain in detail each line of the following code:
 
-```{r, eval=FALSE}
+```{r}
 D=degree_distribution(gf) 
-xx=which(D>0)[-(1:10)]  # remove the first 10 prob values
+xx=which(D>0)[-(1:5)]  # remove the first 5 prob values
 lyy=log(D[xx])
 lxx=log(xx)
 LMI=lm(lyy~lxx)$coefficients  # line coefficients
@@ -234,7 +234,7 @@ points(exp(lxx),exp(LMI[1]+LMI[2]*lxx),col="red",type="l",lwd=2)
 
 * `D=degree_distribution(GRAPH)`: Se obtiene un vector D con las frecuencias relativas de cada grado, es decir, el primer valor es la frecuencia relativa de los nodos de grado 0, el segundo valor la frecuencia de grado 1,...
 
-* `xx=which(D>0)[-(1:10)]`: Se eliminan las frecuencias de los nodos con grado 10 o menos.
+* `xx=which(D>0)[-(1:5)]`: Se eliminan las frecuencias de los nodos con grado 5 o menos.
 
 * `lyy=log(D[xx])`: Se transforma en logaritmo las frecuencias relativas de los grados restantes.
 
@@ -252,10 +252,14 @@ points(exp(lxx),exp(LMI[1]+LMI[2]*lxx),col="red",type="l",lwd=2)
 
 El exponente es el valor absoluto de la pendiente de la recta que se forma usando la escala log-log:
 
+$$y=a\cdot x^b \longrightarrow log(y)=log(a)+b\cdot log(x)$$
+
 ```{r}
 lm_fit <- lm(log(prob) ~ log(deg), data = deg_dist)
-as.vector(-lm_fit$coefficients[2])
+exp <- as.vector(-lm_fit$coefficients[2])
 ```
+
+En este caso, el esponente es `r round(exp, 3)`.
 
 ***
 
@@ -270,7 +274,7 @@ Plot the degree distribution of the generated graph (log-log). What is the expon
 links <- read.table("data/facebook_sample_anon.txt", header = FALSE, as.is = TRUE)
 facenet <- graph_from_data_frame(d = links)
 # Creamos un grafo con la misma distribución de grados
-set.seed(111)
+set.seed(2021)
 ngf <- sample_pa(vcount(facenet), out.seq = degree(facenet, mode = "out"))
 # Obtenemos su distribución
 ndeg_dist <- data_frame(deg = seq(0, length(degree_distribution(ngf, mode = "in")) - 1),
